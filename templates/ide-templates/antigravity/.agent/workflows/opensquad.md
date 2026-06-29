@@ -77,11 +77,11 @@ When a specific agent needs to be activated:
 
 When running a squad:
 
-1. Read `squads/{name}/squad.yaml` to understand the pipeline
-2. Read `squads/{name}/squad-party.csv` to load all agent personas
+1. Read `opensquad/squads/{name}/squad.yaml` to understand the pipeline
+2. Read `opensquad/squads/{name}/squad-party.csv` to load all agent personas
 3. For each agent in the party CSV, also read their full `.agent.md` file from agents/ directory
 4. Load company context from `_opensquad/_memory/company.md`
-5. Load squad memory from `squads/{name}/_memory/memories.md`
+5. Load squad memory from `opensquad/squads/{name}/_memory/memories.md`
 6. Read the pipeline runner instructions from `_opensquad/core/runner.pipeline.md`
 7. Execute the pipeline step by step following runner instructions
 

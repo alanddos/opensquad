@@ -18,9 +18,9 @@ Type `/opensquad` to open the main menu, or use any of these commands:
 - `_opensquad/` — Opensquad core files (do not modify manually)
 - `_opensquad/_memory/` — Persistent memory (company context, preferences)
 - `skills/` — Installed skills (integrations, scripts, prompts)
-- `squads/` — User-created squads
-- `squads/{name}/_investigations/` — Sherlock content investigations (profile analyses)
-- `squads/{name}/output/` — Generated content and files
+- `opensquad/squads/` — User-created squads
+- `opensquad/squads/{name}/_investigations/` — Sherlock content investigations (profile analyses)
+- `opensquad/squads/{name}/output/` — Generated content and files
 - `_opensquad/_browser_profile/` — Persistent browser sessions (login cookies, localStorage)
 
 ## How It Works

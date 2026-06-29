@@ -120,8 +120,24 @@ def generate_image(prompt, output_path, mode, api_key, reference_image=None):
         if img_data.startswith("data:"):
             img_data = img_data.split(",", 1)[1]
 
+    raw_bytes = base64.b64decode(img_data)
+
+    # Ensure image is JPEG RGB 8-bit (Meta WhatsApp requirement)
+    try:
+        from PIL import Image
+        import io
+        img = Image.open(io.BytesIO(raw_bytes))
+        if img.mode not in ('RGB', 'RGBA'):
+            img = img.convert('RGB')
+        # Save as JPEG with RGB mode, 8-bit per channel
+        output = io.BytesIO()
+        img.save(output, format='JPEG', quality=90)
+        raw_bytes = output.getvalue()
+    except Exception as conv_err:
+        print(f"  Warning: Could not convert image format ({conv_err}), saving raw", file=sys.stderr)
+
     with open(output_path, "wb") as f:
-        f.write(base64.b64decode(img_data))
+        f.write(raw_bytes)
 
     size_kb = os.path.getsize(output_path) / 1024
     print(f"  OK: {output_path} ({size_kb:.0f} KB)")

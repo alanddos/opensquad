@@ -109,16 +109,16 @@ When activating an agent (Architect, or any squad agent):
 
 When running a squad (`/opensquad run <name>` or menu option):
 
-1. Read `squads/<name>/squad.yaml`
-2. Read `squads/<name>/squad-party.csv` to load agent personas
+1. Read `opensquad/squads/<name>/squad.yaml`
+2. Read `opensquad/squads/<name>/squad-party.csv` to load agent personas
 3. For each agent in the party CSV, read their `.agent.md` file from the `agents/` directory
 4. Load `_opensquad/_memory/company.md`
-5. Load `squads/<name>/_memory/memories.md` (if it exists)
+5. Load `opensquad/squads/<name>/_memory/memories.md` (if it exists)
 6. Read `_opensquad/core/runner.pipeline.md` for full pipeline execution instructions
 7. Execute all pipeline steps **sequentially in YAML declaration order**
    - Ignore any `parallel` flags — run every step one after another
    - No background processes; all steps execute inline in this session
-8. After completion, update `squads/<name>/_memory/memories.md` with key learnings
+8. After completion, update `opensquad/squads/<name>/_memory/memories.md` with key learnings
 
 ## Checkpoints
 
@@ -136,7 +136,7 @@ When creating a squad (`/opensquad create <description>` or menu option):
 2. Adopt the Architect persona
 3. Ask about reference profiles for Sherlock investigation (Instagram, YouTube, Twitter/X, LinkedIn — provide URLs)
 4. Collaborate with the user to design the squad pipeline
-5. Write all squad files to `squads/<name>/`
+5. Write all squad files to `opensquad/squads/<name>/`
 
 ## Skills Engine
 
@@ -154,7 +154,7 @@ When the user selects Skills or types `/opensquad skills`:
 
 ## Output Rules
 
-- Always save generated content to the squad's output directory: `squads/<name>/output/`
+- Always save generated content to the squad's output directory: `opensquad/squads/<name>/output/`
 - Always load company context before running any squad
 - When switching personas (agent adoption), clearly indicate which agent is speaking
 

@@ -11,8 +11,8 @@ You are now operating as the Opensquad system. Your primary role is to help user
 
 On activation, perform these steps IN ORDER:
 
-1. Read the company context file: `{project-root}/_opensquad/_memory/company.md`
-2. Read the preferences file: `{project-root}/_opensquad/_memory/preferences.md`
+1. Read the company context file: `{project-root}/opensquad/_memory/company.md`
+2. Read the preferences file: `{project-root}/opensquad/_memory/preferences.md`
 3. Check if company.md is empty or contains only the template — if so, trigger ONBOARDING flow
 4. Otherwise, display the MAIN MENU
 
@@ -31,7 +31,7 @@ If `company.md` is empty or contains `<!-- NOT CONFIGURED -->`:
    - Tone of voice (inferred from website copy)
    - Social media profiles found
 6. Present the findings in a clean summary and ask the user to confirm or correct
-7. Save the confirmed profile to `_opensquad/_memory/company.md`
+7. Save the confirmed profile to `opensquad/_memory/company.md`
 8. Show the main menu
 
 ## Main Menu
@@ -58,7 +58,7 @@ Parse user input and route to the appropriate action:
 | `/opensquad` or `/opensquad menu` | Show main menu |
 | `/opensquad help` | Show help text |
 | `/opensquad create <description>` | Run Create Squad — Phased Orchestration flow |
-| `/opensquad list` | List all squads in `squads/` directory |
+| `/opensquad list` | List all squads in `opensquad/squads/` directory |
 | `/opensquad run <name>` | Load Pipeline Runner → Execute squad |
 | `/opensquad edit <name> <changes>` | Load Architect → Edit Squad flow |
 | `/opensquad skills` | Load Skills Engine → Show skills menu |
@@ -77,7 +77,7 @@ When the user runs `/opensquad create`:
 
 ### Phase 1: Discovery
 
-1. Check resume: does `squads/{name}/_build/discovery.yaml` already exist?
+1. Check resume: does `opensquad/squads/{name}/_build/discovery.yaml` already exist?
    - If yes: read it, show summary, ask user to continue or redo
    - If no: proceed with discovery
 
@@ -85,7 +85,7 @@ When the user runs `/opensquad create`:
 
 3. Dispatch Discovery subagent:
    - Read `_opensquad/core/prompts/discovery.prompt.md`
-   - Also provide: `_opensquad/_memory/company.md`, `_opensquad/_memory/preferences.md`
+   - Also provide: `opensquad/_memory/company.md`, `opensquad/_memory/preferences.md`
    - **Provide the list of existing squad folder names** so the agent can avoid collisions
    - Follow the discovery prompt instructions (intelligent wizard, one question at a time)
    - Output: `squads/{code}/_build/discovery.yaml`
@@ -206,11 +206,11 @@ When a specific squad agent needs to be activated during pipeline execution:
 
 When running a squad:
 
-1. Read `squads/{name}/squad.yaml` to understand the pipeline
-2. Read `squads/{name}/squad-party.csv` to load all agent personas
+1. Read `opensquad/squads/{name}/squad.yaml` to understand the pipeline
+2. Read `opensquad/squads/{name}/squad-party.csv` to load all agent personas
 2b. For each agent in the party CSV, also read their full `.agent.md` file from agents/ directory
-3. Load company context from `_opensquad/_memory/company.md`
-4. Load squad memory from `squads/{name}/_memory/memories.md`
+3. Load company context from `opensquad/_memory/company.md`
+4. Load squad memory from `opensquad/squads/{name}/_memory/memories.md`
 5. Read the pipeline runner instructions from `_opensquad/core/runner.pipeline.md`
 6. Execute the pipeline step by step following runner instructions
 

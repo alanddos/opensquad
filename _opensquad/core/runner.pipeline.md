@@ -13,15 +13,15 @@ Before starting execution:
    - The squad's `squad.yaml` (passed to you by the Opensquad skill)
    - The squad's `squad-party.csv` (all agent personas)
    - Company context from `_opensquad/_memory/company.md`
-   - Squad memory from `squads/{name}/_memory/memories.md`
+   - Squad memory from `opensquad/squads/{name}/_memory/memories.md`
 
 1b. **Memory format migration** — After loading `memories.md`, check whether it uses the new format by scanning for the `## Estilo de Escrita` section header:
    ```bash
-   [ -f squads/{name}/_memory/memories.md ] && grep -q "## Estilo de Escrita" squads/{name}/_memory/memories.md && echo "NEW_FORMAT" || echo "OLD_FORMAT"
+   [ -f opensquad/squads/{name}/_memory/memories.md ] && grep -q "## Estilo de Escrita" opensquad/squads/{name}/_memory/memories.md && echo "NEW_FORMAT" || echo "OLD_FORMAT"
    ```
    - If `NEW_FORMAT` → proceed normally.
    - If `OLD_FORMAT` (or file is empty / does not exist) → silently migrate before proceeding:
-     a. Write `squads/{name}/_memory/memories.md` with the new empty-sections format (do NOT attempt to salvage content from the old file — reset unconditionally):
+     a. Write `opensquad/squads/{name}/_memory/memories.md` with the new empty-sections format (do NOT attempt to salvage content from the old file — reset unconditionally):
         ```markdown
         # Squad Memory: {squad-name}
 
@@ -36,9 +36,9 @@ Before starting execution:
         ## Técnico (específico do squad)
         ```
         (Use the squad's display name for `{squad-name}`, and the squad code for `{name}` in file paths — they refer to the same squad.)
-     b. Check if `squads/{name}/_memory/runs.md` exists:
+     b. Check if `opensquad/squads/{name}/_memory/runs.md` exists:
         ```bash
-        test -f squads/{name}/_memory/runs.md && echo "EXISTS" || echo "MISSING"
+        test -f opensquad/squads/{name}/_memory/runs.md && echo "EXISTS" || echo "MISSING"
         ```
         If `MISSING`, create it with:
         ```markdown
@@ -49,7 +49,7 @@ Before starting execution:
         ```
    - Do NOT inform the user or pause execution for this migration — it is transparent.
 
-2. Read `squads/{name}/pipeline/pipeline.yaml` for the pipeline definition
+2. Read `opensquad/squads/{name}/pipeline/pipeline.yaml` for the pipeline definition
 3. **Resolve skills**: Read `squad.yaml` → `skills` section. For each non-native skill (anything other than web_search, web_fetch):
    a. Verify `skills/{skill}/SKILL.md` exists
       - If missing → ask user: "Skill '{skill}' is not installed. Install now? (y/n)"
@@ -72,14 +72,14 @@ Before starting execution:
    ```
 5b. **Initialize run folder**: Generate a unique run ID for this execution:
    - Format: `YYYY-MM-DD-HHmmss` using the current timestamp (e.g. `2026-03-03-143022`)
-   - Check if `squads/{name}/output/{run_id}/` already exists
+   - Check if `opensquad/squads/{name}/output/{run_id}/` already exists
      - If it does (sub-second collision), append `-2`, `-3`, etc. until the folder does not exist
-   - Create the folder using Bash: `mkdir -p squads/{name}/output/{run_id}`
+   - Create the folder using Bash: `mkdir -p opensquad/squads/{name}/output/{run_id}`
    - Store `run_id` in working memory for this run — it will be used for ALL output paths
-6. **Initialize state.json**: Create `squads/{name}/state.json` from scratch (see below). State writes are always mandatory.
-   - **IMPORTANT**: You MUST write to `squads/{name}/state.json` before every step and after every handoff. This is non-negotiable. Never skip these writes.
+6. **Initialize state.json**: Create `opensquad/squads/{name}/state.json` from scratch (see below). State writes are always mandatory.
+   - **IMPORTANT**: You MUST write to `opensquad/squads/{name}/state.json` before every step and after every handoff. This is non-negotiable. Never skip these writes.
    - Create `state.json` from scratch:
-     a. Read `squads/{name}/squad-party.csv` — for each agent row (skip header), extract:
+     a. Read `opensquad/squads/{name}/squad-party.csv` — for each agent row (skip header), extract:
         - `id`: take the `path` column, strip `./agents/` prefix and `.agent.md` suffix
           (e.g. `./agents/researcher.agent.md` → `researcher`)
         - `name`: use the `displayName` column
@@ -88,8 +88,8 @@ Before starting execution:
         - `col = (index % 3) + 1`
         - `row = floor(index / 3) + 1`
         (index 0 → col:1 row:1, index 1 → col:2 row:1, index 2 → col:3 row:1, index 3 → col:1 row:2, etc.)
-     c. Read `squads/{name}/squad.yaml` — count items in `pipeline.steps` for `total`
-     d. Write `squads/{name}/state.json` with the Write tool:
+     c. Read `opensquad/squads/{name}/squad.yaml` — count items in `pipeline.steps` for `total`
+     d. Write `opensquad/squads/{name}/state.json` with the Write tool:
         ```json
         {
           "squad": "{squad code from squad.yaml}",
@@ -196,10 +196,10 @@ Before saving any output file in a step, apply these rules to determine the fina
 
 #### Step 1 — Insert run_id
 
-- If the path starts with `squads/{name}/output/`, insert `{run_id}/` immediately after `output/`
+- If the path starts with `opensquad/squads/{name}/output/`, insert `{run_id}/` immediately after `output/`
   - Example: `squads/carousel/output/slides/draft.md` → `squads/carousel/output/2026-03-03-143022/slides/draft.md`
   - Example: `squads/carousel/output/angles-brief.yaml` → `squads/carousel/output/2026-03-03-143022/angles-brief.yaml`
-- If the path does NOT start with `squads/{name}/output/`, leave it unchanged
+- If the path does NOT start with `opensquad/squads/{name}/output/`, leave it unchanged
 
 #### Step 2 — Insert version folder
 
@@ -211,12 +211,12 @@ Apply to every path that was transformed in Step 1:
 
 2. Detect existing versions for this group using Bash:
    ```bash
-   ls -1 squads/{name}/output/{run_id}/{relative-group}/ 2>/dev/null | grep -E '^v[0-9]+$' | sort -V | tail -1
+   ls -1 opensquad/squads/{name}/output/{run_id}/{relative-group}/ 2>/dev/null | grep -E '^v[0-9]+$' | sort -V | tail -1
    ```
    - If the command returns a version (e.g. `v2`) → use `v3`
    (Always increment the highest version found, even if lower versions have gaps — e.g. if `v1` and `v3` exist, use `v4`)
    - If the command returns nothing (no versions yet) → use `v1`
-   (`{relative-group}` is the portion of the group path after `squads/{name}/output/{run_id}/`, e.g. `slides/` or empty string for root-level files)
+   (`{relative-group}` is the portion of the group path after `opensquad/squads/{name}/output/{run_id}/`, e.g. `slides/` or empty string for root-level files)
 
 3. Insert the version folder immediately before the filename:
    - `squads/carousel/output/2026-03-03-143022/slides/draft.md` → `squads/carousel/output/2026-03-03-143022/slides/v1/draft.md`
@@ -229,7 +229,7 @@ Apply this transformation consistently for every write in this step.
 
 ### For each pipeline step:
 
-0. **Update dashboard** — MANDATORY. Write `squads/{name}/state.json` using the Write tool. Always write — it is never wrong to update the dashboard. Use this content:
+0. **Update dashboard** — MANDATORY. Write `opensquad/squads/{name}/state.json` using the Write tool. Always write — it is never wrong to update the dashboard. Use this content:
    ```json
    {
      "squad": "{squad code from squad.yaml}",
@@ -272,7 +272,7 @@ Apply this transformation consistently for every write in this step.
    - If the step does not declare an `inputFile` → skip this validation entirely.
    - Checkpoint steps (`type: checkpoint`) are exempt — they receive input from the user, not from files.
 
-2. **Read the step file** completely: `squads/{name}/pipeline/steps/{step-file}.md`
+2. **Read the step file** completely: `opensquad/squads/{name}/pipeline/steps/{step-file}.md`
 3. **Check execution mode** from the step's frontmatter:
 
 #### If `execution: subagent`
@@ -291,7 +291,7 @@ Apply this transformation consistently for every write in this step.
   - The veto conditions from the step file (agent should self-check before completing)
   - The company context
   - The squad memory
-  - The **transformed** path to save output (e.g., `squads/{name}/output/2026-03-20-140736/slides/v1/draft.md`)
+  - The **transformed** path to save output (e.g., `opensquad/squads/{name}/output/2026-03-20-140736/slides/v1/draft.md`)
 - Wait for the subagent to complete
 - Inform user: `✓ {Agent Name} completed`
 - Proceed to Post-Step Output Validation (below) before advancing.
@@ -307,7 +307,7 @@ Apply this transformation consistently for every write in this step.
 #### If `type: checkpoint`
 - Present the checkpoint message to the user
 - If the checkpoint requires a choice (numbered list), present options as a numbered list
-- **Always include the file path** of any generated content the user needs to review. Example: "Review the content at `squads/{name}/output/{run_id}/v1/content.md` and let me know if it looks good."
+- **Always include the file path** of any generated content the user needs to review. Example: "Review the content at `opensquad/squads/{name}/output/{run_id}/v1/content.md` and let me know if it looks good."
 - Wait for user input before proceeding
 - Save the user's choice/response for the next step
 - **If the step frontmatter contains `outputFile`**: after collecting the user's full response,
@@ -384,7 +384,7 @@ When a step has `on_reject: {step-id}`:
 
 After a step completes output and there IS a next step (MANDATORY):
 
-1. **Write delivering state** — Write `squads/{name}/state.json` with:
+1. **Write delivering state** — Write `opensquad/squads/{name}/state.json` with:
    - Current step's agent: `"status": "delivering"`
    - Next step's agent: `"status": "idle"`
    - All other agents unchanged
@@ -402,7 +402,7 @@ After a step completes output and there IS a next step (MANDATORY):
 
 2. _(No delay — proceed immediately to working state)_
 
-2. **Write working state** — Write `squads/{name}/state.json` again with:
+2. **Write working state** — Write `opensquad/squads/{name}/state.json` again with:
    - Current agent: `"status": "done"`
    - Next agent: `"status": "working"`
    - Keep the `"handoff"` object from step 1 unchanged
@@ -426,9 +426,9 @@ Steps 1 and 4 are binary bash gates. If either fails, the pipeline does NOT adva
 
 ### After Pipeline Completion
 
-1. Save final output to `squads/{name}/output/{run_id}/{filename}.md`
+1. Save final output to `opensquad/squads/{name}/output/{run_id}/{filename}.md`
    (The run folder was created during initialization — no separate date subfolder needed)
-1b. **Update dashboard** — MANDATORY. Write `squads/{name}/state.json` with:
+1b. **Update dashboard** — MANDATORY. Write `opensquad/squads/{name}/state.json` with:
     - `"status": "completed"`
     - All agents: `"status": "done"`
     - `"updatedAt"`: now
@@ -438,17 +438,17 @@ Steps 1 and 4 are binary bash gates. If either fails, the pipeline does NOT adva
 
 ### Post-Completion Cleanup
 
-After writing the final "completed" state to `squads/{name}/state.json`:
+After writing the final "completed" state to `opensquad/squads/{name}/state.json`:
 
 1. Add the `completedAt` field (or `failedAt` if status is `failed`) with the current ISO timestamp
 2. Copy `state.json` to the run output folder for permanent history:
    ```bash
-   cp squads/{name}/state.json squads/{name}/output/{run_id}/state.json
+   cp opensquad/squads/{name}/state.json opensquad/squads/{name}/output/{run_id}/state.json
    ```
 3. Wait 10 seconds (so the dashboard can display the completed state)
 4. Delete the working copy:
    ```bash
-   rm squads/{name}/state.json
+   rm opensquad/squads/{name}/state.json
    ```
 
 This archives the run state for the `runs` command while keeping the squad root clean.
@@ -457,7 +457,7 @@ This archives the run state for the `runs` command while keeping the squad root 
 
    ### 2a. Update `memories.md` (living preferences)
 
-   Read `squads/{name}/_memory/memories.md` in full. Then identify candidates from this run: **only explicit user feedback** — approvals with comments, rejections with reasons, direct requests ("prefiro X", "não quero Y"). Never infer preferences.
+   Read `opensquad/squads/{name}/_memory/memories.md` in full. Then identify candidates from this run: **only explicit user feedback** — approvals with comments, rejections with reasons, direct requests ("prefiro X", "não quero Y"). Never infer preferences.
 
    For each candidate:
    - If an equivalent memory already exists and is compatible → skip (no duplicate)
@@ -483,7 +483,7 @@ This archives the run state for the `runs` command while keeping the squad root 
 
    ### 2b. Prepend to `runs.md` (reverse-chronological log — newest run first)
 
-   If `squads/{name}/_memory/runs.md` does not exist, create it first with:
+   If `opensquad/squads/{name}/_memory/runs.md` does not exist, create it first with:
    ```markdown
    # Run History: {squad-name}
 
@@ -492,7 +492,7 @@ This archives the run state for the `runs` command while keeping the squad root 
    ```
    Then proceed to prepend the new row.
 
-   Read `squads/{name}/_memory/runs.md`. Prepend one new row to the table (immediately after the header row), with:
+   Read `opensquad/squads/{name}/_memory/runs.md`. Prepend one new row to the table (immediately after the header row), with:
    - `Data`: today's date in YYYY-MM-DD format
    - `Run ID`: the `run_id` for this execution
    - `Tema`: the topic or user request from this run (1 sentence max)
@@ -505,7 +505,7 @@ This archives the run state for the `runs` command while keeping the squad root 
    ```
    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    ✅ Pipeline complete!
-   📁 Run folder: squads/{name}/output/{run_id}/
+   📁 Run folder: opensquad/squads/{name}/output/{run_id}/
    📄 Output saved to: {output path}
    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
