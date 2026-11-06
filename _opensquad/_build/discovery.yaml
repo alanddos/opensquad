@@ -1,0 +1,41 @@
+squad_code: "leads-fiscal"
+purpose: "Captação de leads (Google Maps + Instagram) para campanhas de marketing + acompanhamento recorrente de obrigações fiscais (DEFIS, PGDAS, eSocial, DCTFWeb, IRPF, taxas municipais)"
+domain: "mixed"
+
+company:
+  name: "AgilSystem"
+  tone: "Profissional, acessível, focado em inovação e agilidade"
+  products: "AgilChat (automação WhatsApp com IA), AgilScraper (geração de leads Google Maps), AgilClínicas (gestão de clínicas)"
+
+language: "pt-BR"
+
+context:
+  trigger: "Recorrente — mensal para fiscal, contínua para captação"
+  systems: "Portal Simples Nacional (PGDAS-D/DEFIS), eSocial Web Geral (folha), Portal eCAC (DCTFWeb/IRPF), Download IRPF 2026, Portal Contribuinte Prefeitura Dourados/MS, Google Maps (AgilScraper), Instagram"
+  frequency: "Mensal (fiscal) + contínua (captação)"
+
+tools_needed:
+  - web_search
+  - web_fetch
+  - instagram_investigation
+
+investigation:
+  enabled: true
+  profiles:
+    - url: "https://www.instagram.com/cubochat/"
+      platform: "instagram"
+      investigation_mode: "profile_1"
+    - url: "https://www.instagram.com/rdstation/"
+      platform: "instagram"
+      investigation_mode: "profile_1"
+    - url: "https://www.instagram.com/hubspot/"
+      platform: "instagram"
+      investigation_mode: "profile_1"
+    - url: "https://www.instagram.com/wasellercrm/"
+      platform: "instagram"
+      investigation_mode: "profile_1"
+    - url: "https://www.instagram.com/sendpulse_br/"
+      platform: "instagram"
+      investigation_mode: "profile_1"
+
+target_formats: []

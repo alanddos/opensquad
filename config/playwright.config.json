@@ -1,0 +1,5 @@
+{
+  "browser": "chromium",
+  "headless": true,
+  "viewportSize": { "width": 1280, "height": 720 }
+}

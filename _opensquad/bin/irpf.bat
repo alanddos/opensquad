@@ -1,0 +1,1 @@
+node "opensquad/_opensquad/core/run-irpf.cjs"
