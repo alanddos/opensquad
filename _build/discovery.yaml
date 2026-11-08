@@ -1,0 +1,34 @@
+squad_code: "agent-memory-research"
+purpose: "Pesquisar melhores práticas de memória de agentes IA (aprendizado e semântica por contato) e propor ajustes no sistema atual"
+domain: "research"
+
+company:
+  name: "AgilSystem"
+  tone: "Profissional, acessível, inovador"
+  products: "AgilChat, AgilScraper, AgilClínicas"
+
+language: "pt-BR"
+
+context:
+  sources: "Sites públicos (documentação, artigos, blogs)"
+  output_format: "Decidido por agentes (melhor formato para leitura)"
+  frequency: "Sob demanda"
+
+tools_needed:
+  - "web_search"
+  - "web_fetch"
+
+investigation:
+  enabled: true
+  profiles:
+    - url: "https://github.com/neo4j-labs/agent-memory"
+      platform: "github"
+      investigation_mode: "repository"
+    - url: "https://github.com/lucasmailland/mnemosyne"
+      platform: "github"
+      investigation_mode: "repository"
+    - url: "https://github.com/rohitg00/agentmemory"
+      platform: "github"
+      investigation_mode: "repository"
+
+target_formats: []
